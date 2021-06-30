@@ -23,6 +23,13 @@ module.exports = {
         onUpdate: "RESTRICT",
         onDelete: "RESTRICT",
       },
+      associateId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: { model: "Associates", key: "id" },
+        onUpdate: "RESTRICT",
+        onDelete: "RESTRICT",
+      },
       description: {
         type: Sequelize.STRING,
         allowNull: false,

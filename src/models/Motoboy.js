@@ -5,8 +5,8 @@ class Motoboy extends Sequelize.Model {
     super.init(
       {
         name: Sequelize.STRING,
-        cpf: Sequelize.INTEGER,
-        phone: Sequelize.INTEGER,
+        cpf: Sequelize.BIGINT,
+        phone: Sequelize.BIGINT,
         password: Sequelize.STRING,
       },
       {
@@ -17,6 +17,7 @@ class Motoboy extends Sequelize.Model {
 
   static associate(models) {
     this.hasMany(models.Delivery, { foreignKey: "motoboyId" });
+    this.belongsTo(models.Associate, { foreignKey: "associateId" });
   }
 }
 

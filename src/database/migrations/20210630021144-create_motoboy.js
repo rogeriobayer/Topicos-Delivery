@@ -9,16 +9,24 @@ module.exports = {
         autoIncrement: true,
         allowNull: false,
       },
+      associateId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: { model: "Associates", key: "id" },
+        onUpdate: "RESTRICT",
+        onDelete: "RESTRICT",
+      },
       name: {
         type: Sequelize.STRING,
         allowNull: false,
       },
       cpf: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.BIGINT,
         allowNull: false,
+        unique: true,
       },
       phone: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.BIGINT,
         allowNull: false,
       },
       password: {

@@ -2,19 +2,12 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable("Customers", {
+    await queryInterface.createTable("Associates", {
       id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true,
         allowNull: false,
-      },
-      associateId: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: { model: "Associates", key: "id" },
-        onUpdate: "RESTRICT",
-        onDelete: "RESTRICT",
       },
       companyname: {
         type: Sequelize.STRING,
@@ -22,11 +15,14 @@ module.exports = {
       },
       cnpj: {
         type: Sequelize.BIGINT,
-        primaryKey: true,
-        unique: true,
         allowNull: false,
+        unique: true,
       },
       address: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      password: {
         type: Sequelize.STRING,
         allowNull: false,
       },
@@ -46,6 +42,6 @@ module.exports = {
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable("Customers");
+    await queryInterface.dropTable("Associates");
   },
 };

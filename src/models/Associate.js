@@ -5,7 +5,7 @@ class Associate extends Sequelize.Model {
     super.init(
       {
         companyname: Sequelize.STRING,
-        cnpj: Sequelize.INTEGER,
+        cnpj: Sequelize.BIGINT,
         address: Sequelize.STRING,
         password: Sequelize.STRING,
       },
@@ -17,6 +17,8 @@ class Associate extends Sequelize.Model {
 
   static associate(models) {
     this.hasMany(models.Delivery, { foreignKey: "associateId" });
+    this.hasMany(models.Motoboy, { foreignKey: "associateId" });
+    this.hasMany(models.Customer, { foreignKey: "associateId" });
   }
 }
 
