@@ -10,5 +10,9 @@ deliveyRouter.post(
     "/searchDeliveriesByStatus",
     deliveryController.searchDeliveriesByStatus
 );
+deliveyRouter.post(
+    "/searchDeliveriesByMotoboy",
+    deliveryController.searchDeliveriesByMotoboy
+);
 
 module.exports = deliveyRouter;

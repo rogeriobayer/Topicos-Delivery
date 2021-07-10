@@ -93,30 +93,60 @@ module.exports = {
     async searchDeliveriesByStatus(req, res) {
         const status = req.body.status;
         if (!status)
-          res.status(400).json({
-            msg: "Parâmetro status está vazio.",
-          });
+            res.status(400).json({
+                msg: "Parâmetro status está vazio.",
+            });
         const Op = Sequelize.Op;
         const delivery = await Delivery.findAll({
-          where: {
-            status: {
-              [Op.like]: "%" + status + "%"
-            }
-          },
+            where: {
+                status: {
+                    [Op.like]: "%" + status + "%"
+                }
+            },
         });
         if (delivery) {
-          if (delivery == "")
-            res
-            .status(404)
-            .json({
-              msg: "Entregas com status " + status + " não encontrado"
+            if (delivery == "")
+                res
+                .status(404)
+                .json({
+                    msg: "Entregas com status " + status + " não encontrado"
+                });
+            else res.status(200).json({
+                delivery
             });
-          else res.status(200).json({
-            delivery
-          });
         } else
-          res.status(404).json({
-            msg: "Entregas não encontradas.",
-          });
-      }
+            res.status(404).json({
+                msg: "Entregas não encontradas.",
+            });
+    },
+
+    async searchDeliveriesByMotoboy(req, res) {
+        const motoboy = req.body.motoboyId;
+        if (!motoboy)
+            res.status(400).json({
+                msg: "Parâmetro motoboyID está vazio.",
+            });
+        const Op = Sequelize.Op;
+        const delivery = await Delivery.findAll({
+            where: {
+                motoboyId: {
+                    [Op.like]: "%" + motoboy + "%"
+                }
+            },
+        });
+        if (delivery) {
+            if (delivery == "")
+                res
+                .status(404)
+                .json({
+                    msg: "Entregas do motoboy com ID " + motoboy + " não encontrado"
+                });
+            else res.status(200).json({
+                delivery
+            });
+        } else
+            res.status(404).json({
+                msg: "Entregas não encontradas.",
+            });
+    }
 }
