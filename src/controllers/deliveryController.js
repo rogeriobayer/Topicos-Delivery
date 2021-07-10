@@ -88,5 +88,35 @@ module.exports = {
         else res.status(404).json({
             msg: "Não foi possível encontrar pedidos."
         });
-    }
+    },
+
+    async searchDeliveriesByStatus(req, res) {
+        const status = req.body.status;
+        if (!status)
+          res.status(400).json({
+            msg: "Parâmetro status está vazio.",
+          });
+        const Op = Sequelize.Op;
+        const delivery = await Delivery.findAll({
+          where: {
+            status: {
+              [Op.like]: "%" + status + "%"
+            }
+          },
+        });
+        if (delivery) {
+          if (delivery == "")
+            res
+            .status(404)
+            .json({
+              msg: "Entregas com status " + status + " não encontrado"
+            });
+          else res.status(200).json({
+            delivery
+          });
+        } else
+          res.status(404).json({
+            msg: "Entregas não encontradas.",
+          });
+      }
 }

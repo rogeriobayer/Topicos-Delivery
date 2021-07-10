@@ -6,9 +6,9 @@ deliveyRouter.post("/newDelivery", deliveryController.newDelivery);
 // deliveyRouter.delete("/deleteDelivery/:id", deliveryController.deleteDelivery);
 // deliveyRouter.put("/updateDelivery", deliveryController.updateDelivery);
 deliveyRouter.get("/listAllDeliveries", deliveryController.listAllDeliveries);
-// deliveyRouter.post(
-//   "/searchDeliveryByCpf",
-//   deliveryController.searchDeliveryByCpf
-// );
+deliveyRouter.post(
+    "/searchDeliveriesByStatus",
+    deliveryController.searchDeliveriesByStatus
+);
 
 module.exports = deliveyRouter;
