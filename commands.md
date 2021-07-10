@@ -1,4 +1,4 @@
-docker exec -it nome-do-container mysql -uroot -psua-senha
+docker exec -it mymysql mysql -uroot -psua-senha
 
 npm install -g sequelize-cli
 npx sequelize init

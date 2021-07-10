@@ -1,18 +1,18 @@
 const express = require("express");
-const deliveyRouter = express.Router();
+const deliveryRouter = express.Router();
 const deliveryController = require("../controllers/deliveryController");
 
-deliveyRouter.post("/newDelivery", deliveryController.newDelivery);
-// deliveyRouter.delete("/deleteDelivery/:id", deliveryController.deleteDelivery);
-// deliveyRouter.put("/updateDelivery", deliveryController.updateDelivery);
-deliveyRouter.get("/listAllDeliveries", deliveryController.listAllDeliveries);
-deliveyRouter.post(
-    "/searchDeliveriesByStatus",
-    deliveryController.searchDeliveriesByStatus
+deliveryRouter.post("/newDelivery", deliveryController.newDelivery);
+deliveryRouter.delete("/deleteDelivery/:id", deliveryController.deleteDelivery);
+deliveryRouter.put("/updateDelivery", deliveryController.updateDelivery);
+deliveryRouter.get("/listAllDeliveries", deliveryController.listAllDeliveries);
+deliveryRouter.post(
+  "/searchDeliveriesByStatus",
+  deliveryController.searchDeliveriesByStatus
 );
-deliveyRouter.post(
-    "/searchDeliveriesByMotoboy",
-    deliveryController.searchDeliveriesByMotoboy
+deliveryRouter.post(
+  "/searchDeliveriesByMotoboy",
+  deliveryController.searchDeliveriesByMotoboy
 );
 
-module.exports = deliveyRouter;
+module.exports = deliveryRouter;
