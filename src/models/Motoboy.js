@@ -5,7 +5,7 @@ class Motoboy extends Sequelize.Model {
     super.init(
       {
         name: Sequelize.STRING,
-        cpf: Sequelize.BIGINT,
+        cpf: Sequelize.STRING,
         phone: Sequelize.BIGINT,
         password: Sequelize.STRING,
       },
