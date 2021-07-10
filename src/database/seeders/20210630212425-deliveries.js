@@ -6,12 +6,12 @@ module.exports = {
       "Deliveries",
       [
         {
-          associateId: 1,
-          motoboyId: 2,
-          customerId: 1,
+          associateId: 4,
+          motoboyId: 6,
+          customerId: 7,
           status: "Em Aberto",
-          price: 9.95,
-          description: "Shampoo CLEAR",
+          price: 12.00,
+          description: "Desodorante Old Spice",
         },
         {
           associateId: 1,
