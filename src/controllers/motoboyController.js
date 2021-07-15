@@ -1,6 +1,7 @@
 const Motoboy = require("../models/Motoboy");
 const Sequelize = require("sequelize");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 function passwordValidation(password) {
   if (password.length < 8) return "Senha deve ter no mínimo 8 caracteres.";
@@ -11,7 +12,39 @@ function passwordValidation(password) {
   else return "OK";
 }
 
+function generateToken(id) {
+	process.env.JWT_SECRET = Math.random().toString(36).slice(-20);
+	const token = jwt.sign({ id }, process.env.JWT_SECRET, {
+		expiresIn: 18000, // Token expira em 5 horas
+	});
+	return token;
+}
+
 module.exports = {
+  async authentication(req, res) {
+		const cpf = req.body.cpf;
+		const password = req.body.password;
+		if (!cpf || !password)
+			return res.status(400).json({ msg: "Campos obrigatórios vazios!" });
+		try {
+			const motoboy = await Motoboy.findOne({
+				where: { cpf },
+			});
+			if (!motoboy)
+				return res.status(404).json({ msg: "Usuário ou senha inválidos." });
+			else {
+				if (bcrypt.compareSync(password, motoboy.password)) {
+					const token = generateToken(motoboy.id);
+					return res
+						.status(200)
+						.json({ msg: "Autenticado com sucesso", token });
+				} else
+					return res.status(404).json({ msg: "Usuário ou senha inválidos." });
+			}
+		}catch (error) {
+			res.status(500).json(error);
+		}
+	},
   async newMotoboy(req, res) {
     const { name, cpf, phone, password, associateId } = req.body;
     if (!name || !cpf || !phone || !password || !associateId) {
