@@ -1,7 +1,40 @@
 const Associate = require("../models/Associate.js");
 const Sequelize = require("sequelize");
 const Deliveries = require("../models/Delivery.js");
+
+function generateToken(id) {
+	process.env.JWT_SECRET = Math.random().toString(36).slice(-20);
+	const token = jwt.sign({ id }, process.env.JWT_SECRET, {
+		expiresIn: 18000, // Token expira em 5 horas
+	});
+	return token;
+}
+
 module.exports = {
+  async authentication(req, res) {
+		const cnpj = req.body.cnpj;
+		const password = req.body.password;
+		if (!cnpj || !password)
+			return res.status(400).json({ msg: "Campos obrigatórios vazios!" });
+		try {
+			const associate = await Associate.findOne({
+				where: { cnpj },
+			});
+			if (!associate)
+				return res.status(404).json({ msg: "Usuário ou senha inválidos." });
+			else {
+				if (bcrypt.compareSync(password, associate.password)) {
+					const token = generateToken(associate.id);
+					return res
+						.status(200)
+						.json({ msg: "Autenticado com sucesso", token });
+				} else
+					return res.status(404).json({ msg: "Usuário ou senha inválidos." });
+			}
+		}catch (error) {
+			res.status(500).json(error);
+		}
+	},
   //**Novo associado */
   async newAssociate(req, res) {
     try {
