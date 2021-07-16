@@ -2,10 +2,11 @@ const Associate = require("../models/Associate.js");
 const Sequelize = require("sequelize");
 const Deliveries = require("../models/Delivery.js");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 function generateToken(id) {
-  process.env.JWT_SECRET = Math.random().toString(36).slice(-20);
-  const token = jwt.sign({ id }, process.env.JWT_SECRET, {
+  process.env.ASSOCIATE_SECRET = Math.random().toString(36).slice(-20);
+  const token = jwt.sign({ id }, process.env.ASSOCIATE_SECRET, {
     expiresIn: 18000, // Token expira em 5 horas
   });
   return token;

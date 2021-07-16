@@ -1,15 +1,15 @@
 const express = require("express");
 const motoboyRouter = express.Router();
 const motoboyController = require("../controllers/motoboyController");
-const auth = require("../middlewares/auth");
+const authAssociate = require("../middlewares/authAssociate");
 
 motoboyRouter.post("/authentication", motoboyController.authentication);
-motoboyRouter.post("/newMotoboy",auth, motoboyController.newMotoboy);
-motoboyRouter.delete("/deleteMotoboy/:id",auth, motoboyController.deleteMotoboy);
-motoboyRouter.put("/updateMotoboy",auth, motoboyController.updateMotoboy);
-motoboyRouter.get("/listAllMotoboys",auth, motoboyController.listAllMotoboys);
+motoboyRouter.post("/newMotoboy",authAssociate, motoboyController.newMotoboy);
+motoboyRouter.delete("/deleteMotoboy/:id",authAssociate, motoboyController.deleteMotoboy);
+motoboyRouter.put("/updateMotoboy",authAssociate, motoboyController.updateMotoboy);
+motoboyRouter.get("/listAllMotoboys",authAssociate, motoboyController.listAllMotoboys);
 motoboyRouter.post(
-  "/searchMotoboyByCpf",
+  "/searchMotoboyByCpf",authAssociate,
   motoboyController.searchMotoboyByCpf
 );
 
