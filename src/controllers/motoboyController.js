@@ -1,4 +1,5 @@
 const Motoboy = require("../models/Motoboy");
+const Delivery = require("../models/Delivery");
 const Sequelize = require("sequelize");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -13,38 +14,38 @@ function passwordValidation(password) {
 }
 
 function generateToken(id) {
-	process.env.JWT_SECRET = Math.random().toString(36).slice(-20);
-	const token = jwt.sign({ id }, process.env.JWT_SECRET, {
-		expiresIn: 18000, // Token expira em 5 horas
-	});
-	return token;
+  process.env.JWT_SECRET = Math.random().toString(36).slice(-20);
+  const token = jwt.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: 18000, // Token expira em 5 horas
+  });
+  return token;
 }
 
 module.exports = {
   async authentication(req, res) {
-		const cpf = req.body.cpf;
-		const password = req.body.password;
-		if (!cpf || !password)
-			return res.status(400).json({ msg: "Campos obrigatórios vazios!" });
-		try {
-			const motoboy = await Motoboy.findOne({
-				where: { cpf },
-			});
-			if (!motoboy)
-				return res.status(404).json({ msg: "Usuário ou senha inválidos." });
-			else {
-				if (bcrypt.compareSync(password, motoboy.password)) {
-					const token = generateToken(motoboy.id);
-					return res
-						.status(200)
-						.json({ msg: "Autenticado com sucesso", token });
-				} else
-					return res.status(404).json({ msg: "Usuário ou senha inválidos." });
-			}
-		}catch (error) {
-			res.status(500).json(error);
-		}
-	},
+    const cpf = req.body.cpf;
+    const password = req.body.password;
+    if (!cpf || !password)
+      return res.status(400).json({ msg: "Campos obrigatórios vazios!" });
+    try {
+      const motoboy = await Motoboy.findOne({
+        where: { cpf },
+      });
+      if (!motoboy)
+        return res.status(404).json({ msg: "Usuário ou senha inválidos." });
+      else {
+        if (bcrypt.compareSync(password, motoboy.password)) {
+          const token = generateToken(motoboy.id);
+          return res
+            .status(200)
+            .json({ msg: "Autenticado com sucesso", token });
+        } else
+          return res.status(404).json({ msg: "Usuário ou senha inválidos." });
+      }
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  },
   async newMotoboy(req, res) {
     const { name, cpf, phone, password, associateId } = req.body;
     if (!name || !cpf || !phone || !password || !associateId) {
@@ -196,5 +197,39 @@ module.exports = {
           });
       }
     }
+  },
+
+  async getFinancialReportByMotoboy(req, res) {
+    const MotoboyId = req.body.id;
+    let deliveries;
+    if (!MotoboyId)
+      res.status(400).json({
+        msg: "ID do Motoboy vazio.",
+      });
+    deliveries = await Delivery.findAll({
+      attributes: ["price"],
+      raw: true,
+      where: {
+        motoboyId: MotoboyId,
+      },
+    }).catch((error) => {
+      return res.status(500).json({ msg: "Erro interno do servidor" + error });
+    });
+
+    console.log(deliveries);
+    let totalDeliveries = 0;
+    for (const item of deliveries) {
+      totalDeliveries += Number.parseInt(item.price);
+    }
+
+    if (deliveries)
+      res.status(200).json({
+        "Valor total das entregas do motoboy selecionado":
+          totalDeliveries.toFixed(2),
+        "Valor destinado para o motoboy":
+          (totalDeliveries.toFixed(2) / 100) * 70,
+      });
+    else
+      res.status(404).json({ msg: "Nao foi possível encontrar Associados." });
   },
 };
