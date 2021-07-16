@@ -1,6 +1,9 @@
-const Associate = require("../models/Associate.js");
+const Associate = require("../models/Associate");
+const Customer = require("../models/Customer");
+const Motoboy = require("../models/Motoboy");
+const Delivery = require("../models/Delivery");
+
 const Sequelize = require("sequelize");
-const Deliveries = require("../models/Delivery.js");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
@@ -10,6 +13,68 @@ function generateToken(id) {
     expiresIn: 18000, // Token expira em 5 horas
   });
   return token;
+}
+
+async function getRankOfCustomers(arr) {
+  let itemPicked,
+    list = [];
+
+  let arrayOfKey = arr.map(function (item) {
+    return item["customerId"];
+  });
+
+  for (const item of arrayOfKey
+    .sort()
+    .filter((el, i, a) => i === a.indexOf(el))) {
+    itemPicked = await Customer.findAll({
+      attributes: ["id", "companyname"],
+      raw: true,
+      where: {
+        id: item,
+      },
+    }).catch((error) => {
+      return res.status(500).json({ msg: "Erro interno do servidor" + error });
+    });
+
+    list.push(itemPicked[0]);
+  }
+  return list.slice(0, 4);
+}
+
+async function getRankOfMotoboys(arr) {
+  let itemPicked,
+    list = [];
+
+  let arrayOfKey = arr.map(function (item) {
+    return item["motoboyId"];
+  });
+
+  for (const item of arrayOfKey
+    .sort()
+    .filter((el, i, a) => i === a.indexOf(el))) {
+    itemPicked = await Motoboy.findAll({
+      attributes: ["id", "name"],
+      raw: true,
+      where: {
+        id: item,
+      },
+    }).catch((error) => {
+      return res.status(500).json({ msg: "Erro interno do servidor" + error });
+    });
+
+    list.push(itemPicked[0]);
+  }
+  return list.slice(0, 4);
+}
+
+async function getPercentageOfDelivered(arr) {
+  let arrayOfKey = arr.filter((item) => item.status === "Entregue").length;
+  return ((Object.keys(arr).length / 100) * arrayOfKey).toFixed(2) + "%";
+}
+
+async function getPercentageOfOpen(arr) {
+  let arrayOfKey = arr.filter((item) => item.status === "Em Aberto").length;
+  return ((Object.keys(arr).length / 100) * arrayOfKey).toFixed(2) + "%";
 }
 
 module.exports = {
@@ -138,5 +203,62 @@ module.exports = {
     if (deletedAssociate != 0)
       res.status(200).json({ msg: "Associado excluido com sucesso." });
     else res.status(404).json({ msg: "Associado não encontrado." });
+  },
+
+  async getAdministrativeReport(req, res) {
+    let customers, motoboys, deliveries;
+    try {
+      customers = await Customer.count();
+      motoboys = await Motoboy.count();
+      deliveries = await Delivery.findAll();
+    } catch {
+      res.status(500).json({ msg: "Falha na conexão com o banco de dados." });
+    }
+
+    if (customers && motoboys && deliveries)
+      res.status(200).json({
+        "Clientes cadastrados": customers,
+        "Motoboys cadastrados": motoboys,
+        "Deliveries cadastrados": Object.keys(deliveries).length,
+        "Clientes que mais fizeram pedidos": await getRankOfCustomers(
+          deliveries
+        ),
+        "Motoboys que mais fizeram entregas": await getRankOfMotoboys(
+          deliveries
+        ),
+        "Porcentagem de entregas Realizadas": await getPercentageOfDelivered(
+          deliveries
+        ),
+        "Porcentagem de entregas Em Aberto": await getPercentageOfOpen(
+          deliveries
+        ),
+      });
+    else
+      res.status(404).json({ msg: "Nao foi possível encontrar Associados." });
+  },
+
+  async getFinancialReport(req, res) {
+    let deliveries;
+    try {
+      deliveries = await Delivery.findAll();
+    } catch {
+      res.status(500).json({ msg: "Falha na conexão com o banco de dados." });
+    }
+
+    let totalDeliveries = 0;
+    for (const item of deliveries) {
+      totalDeliveries += Number.parseInt(item.price);
+    }
+
+    if (deliveries)
+      res.status(200).json({
+        "Valor total das entregas": totalDeliveries.toFixed(2),
+        "Valor destinado para os motoboys":
+          (totalDeliveries.toFixed(2) / 100) * 70,
+        "Valor destinado para o associado":
+          (totalDeliveries.toFixed(2) / 100) * 30,
+      });
+    else
+      res.status(404).json({ msg: "Nao foi possível encontrar Associados." });
   },
 };

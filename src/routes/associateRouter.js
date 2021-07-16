@@ -16,4 +16,14 @@ associateRouter.post(
 associateRouter.put("/updateAssociate", associateController.updateAssociate);
 associateRouter.delete("/deleteAssociate",associateController.deleteAssociate);
 
+associateRouter.get(
+  "/getAdministrativeReport",
+  associateController.getAdministrativeReport
+);
+
+associateRouter.get(
+  "/getFinancialReport",
+  associateController.getFinancialReport
+);
+
 module.exports = associateRouter;
