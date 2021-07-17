@@ -5,14 +5,73 @@ const Delivery = require("../models/Delivery");
 
 const Sequelize = require("sequelize");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 function generateToken(id) {
-  process.env.JWT_SECRET = Math.random().toString(36).slice(-20);
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
+  process.env.ASSOCIATE_SECRET = Math.random().toString(36).slice(-20);
+  const token = jwt.sign({ id }, process.env.ASSOCIATE_SECRET, {
     expiresIn: 18000, // Token expira em 5 horas
   });
+  return token;
 }
+function passwordValidation(password) {
+  if (password.length < 8) return "Senha deve ter no mínimo 8 caracteres.";
+  else if (!password.match(/[a-zA-Z]/g))
+    return "Senha deve ter no mínimo uma letra.";
+  else if (!password.match(/[0-9]+/))
+    return "Senha deve ter no mínimo um número.";
+  else if (!password.match(/[*!@#$%^&()_+-=[]{};':"\|,.<>?]/))
+    return "Senha deve ter no mínimo um caracter especial.";
+  else return "OK";
+}
+function cnpjValidation(cnpj) {
+  cnpj = cnpj.replace(/[^\d]+/g, ""); //Tira possíveis mascaras do front
 
+  if (cnpj == "") return "cnpj vazio";
+
+  if (cnpj.length != 14) return "cnpj não está completo";
+
+  // Elimina CNPJs invalidos conhecidos
+  if (
+    cnpj == "00000000000000" ||
+    cnpj == "11111111111111" ||
+    cnpj == "22222222222222" ||
+    cnpj == "33333333333333" ||
+    cnpj == "44444444444444" ||
+    cnpj == "55555555555555" ||
+    cnpj == "66666666666666" ||
+    cnpj == "77777777777777" ||
+    cnpj == "88888888888888" ||
+    cnpj == "99999999999999"
+  )
+    return "cnpj inválido";
+
+  // Valida os digitos verificadores
+  tamanho = cnpj.length - 2;
+  numeros = cnpj.substring(0, tamanho);
+  digitos = cnpj.substring(tamanho);
+  soma = 0;
+  pos = tamanho - 7;
+  for (i = tamanho; i >= 1; i--) {
+    soma += numeros.charAt(tamanho - i) * pos--;
+    if (pos < 2) pos = 9;
+  }
+  resultado = soma % 11 < 2 ? 0 : 11 - (soma % 11);
+  if (resultado != digitos.charAt(0)) return "cnpj inválido";
+
+  tamanho = tamanho + 1;
+  numeros = cnpj.substring(0, tamanho);
+  soma = 0;
+  pos = tamanho - 7;
+  for (i = tamanho; i >= 1; i--) {
+    soma += numeros.charAt(tamanho - i) * pos--;
+    if (pos < 2) pos = 9;
+  }
+  resultado = soma % 11 < 2 ? 0 : 11 - (soma % 11);
+  if (resultado != digitos.charAt(1)) return "cnpj inválido";
+
+  return "OK";
+}
 async function getRankOfCustomers(arr) {
   let itemPicked,
     list = [];
@@ -104,7 +163,20 @@ module.exports = {
   async newAssociate(req, res) {
     try {
       const { companyname, cnpj, address, password } = req.body;
-      //** Caso o endereço seja undefined, no midaware precisa => 'address = "";'  */
+      if (!companyname || !cnpj || !address || !password) {
+        res.status(400).json({
+          msg: "Dados obrigatórios não foram preenchidos.",
+        });
+      }
+      const cnpjValid = cnpjValidation(cnpj);
+      if (cnpjValid !== "OK") {
+        return res.status(400).json({ msg: cnpjValid });
+      }
+      const passwordValid = passwordValidation(password);
+      if (passwordValid !== "OK")
+        return res.status(400).json({
+          msg: passwordValid,
+        });
       const isAssociateNew = await Associate.findOne({
         where: { cnpj },
       });
@@ -120,9 +192,7 @@ module.exports = {
           address,
           password: hash,
         }).catch((error) => {
-          res
-            .status(500)
-            .json({ msg: "Não foi possível aasdaksodakod inserir os dados." });
+          res.status(500).json({ msg: "Não foi possível inserir os dados." });
         });
         if (associate)
           res.status(201).json({ msg: "Novo associado foi adicionado." });
@@ -150,6 +220,10 @@ module.exports = {
   //** Buscar associado pelo cnpj */
   async searchAssociateByCnpj(req, res) {
     const cnpj = req.body.cnpj;
+    const cnpjValid = cnpjValidation(cnpj);
+    if (cnpjValid !== "OK") {
+      return res.status(400).json({ msg: cnpjValid });
+    }
     const associate = await Associate.findOne({
       where: { cnpj },
     });
@@ -161,6 +235,20 @@ module.exports = {
   async updateAssociate(req, res) {
     try {
       const { id, companyname, cnpj, address, password } = req.body;
+      if (!companyname || !cnpj || !address || !password) {
+        res.status(400).json({
+          msg: "Dados obrigatórios não foram preenchidos.",
+        });
+      }
+      const cnpjValid = cnpjValidation(cnpj);
+      if (cnpjValid !== "OK") {
+        return res.status(400).json({ msg: cnpjValid });
+      }
+      const passwordValid = passwordValidation(password);
+      if (passwordValid !== "OK")
+        return res.status(400).json({
+          msg: passwordValid,
+        });
       const associateExists = await Associate.findByPk(id);
       if (associateExists) {
         const associateCnpjExists = await Associate.findOne({
