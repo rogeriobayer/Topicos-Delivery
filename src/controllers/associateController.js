@@ -67,12 +67,12 @@ async function getRankOfMotoboys(arr) {
 
 async function getPercentageOfDelivered(arr) {
   let arrayOfKey = arr.filter((item) => item.status === "Entregue").length;
-  return ((Object.keys(arr).length / 100) * arrayOfKey).toFixed(2) + "%";
+  return ((100 / Object.keys(arr).length) * arrayOfKey).toFixed(2) + "%";
 }
 
 async function getPercentageOfOpen(arr) {
   let arrayOfKey = arr.filter((item) => item.status === "Em Aberto").length;
-  return ((Object.keys(arr).length / 100) * arrayOfKey).toFixed(2) + "%";
+  return ((100 / Object.keys(arr).length) * arrayOfKey).toFixed(2) + "%";
 }
 
 module.exports = {
@@ -250,11 +250,11 @@ module.exports = {
 
     if (deliveries)
       res.status(200).json({
-        "Valor total das entregas": totalDeliveries.toFixed(2),
+        "Valor total das entregas": "R$" + totalDeliveries.toFixed(2),
         "Valor destinado para os motoboys":
-          (totalDeliveries.toFixed(2) / 100) * 70,
+          "R$ " + (totalDeliveries.toFixed(2) / 100) * 70,
         "Valor destinado para o associado":
-          (totalDeliveries.toFixed(2) / 100) * 30,
+          "R$ " + (totalDeliveries.toFixed(2) / 100) * 30,
       });
     else
       res.status(404).json({ msg: "Nao foi possível encontrar Associados." });
