@@ -1,6 +1,7 @@
 const express = require("express");
 const associateRouter = express.Router();
 const associateController = require("../controllers/associateController");
+const auth = require("../middlewares/auth");
 
 associateRouter.post("/authentication", associateController.authentication);
 associateRouter.post("/newAssociate", associateController.newAssociate);
@@ -10,17 +11,17 @@ associateRouter.get(
 );
 associateRouter.post(
   "/searchAssociateByCnpj",
-  authAssociate,
+  auth,
   associateController.searchAssociateByCnpj
 );
 associateRouter.put(
   "/updateAssociate",
-  authAssociate,
+  auth,
   associateController.updateAssociate
 );
 associateRouter.delete(
   "/deleteAssociate",
-  authAssociate,
+  auth,
   associateController.deleteAssociate
 );
 
@@ -33,5 +34,7 @@ associateRouter.get(
   "/getFinancialReport",
   associateController.getFinancialReport
 );
+
+associateRouter.get("/logout", auth, associateController.logout);
 
 module.exports = associateRouter;

@@ -8,8 +8,8 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 function generateToken(id) {
-  process.env.ASSOCIATE_SECRET = Math.random().toString(36).slice(-20);
-  const token = jwt.sign({ id }, process.env.ASSOCIATE_SECRET, {
+  process.env.JWT_SECRET = Math.random().toString(36).slice(-20);
+  const token = jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: 18000, // Token expira em 5 horas
   });
   return token;
@@ -347,4 +347,8 @@ module.exports = {
     else
       res.status(404).json({ msg: "Nao foi possível encontrar Associados." });
   },
+  logout(req, res) {
+		process.env.JWT_SECRET = Math.random().toString(36).slice(-20);
+		res.sendStatus(200);
+	},
 };
