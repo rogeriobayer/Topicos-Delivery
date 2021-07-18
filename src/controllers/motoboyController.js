@@ -40,7 +40,7 @@ module.exports = {
           const token = generateToken(motoboy.id);
           return res
             .status(200)
-            .json({ msg: "Autenticado com sucesso", token });
+            .json({ msg: "Autenticado com sucesso, tipo = Motoboy", token });
         } else
           return res.status(404).json({ msg: "Usuário ou senha inválidos." });
       }
