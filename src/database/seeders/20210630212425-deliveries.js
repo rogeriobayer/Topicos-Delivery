@@ -8,9 +8,9 @@ module.exports = {
         {
           associateId: 4,
           motoboyId: 6,
-          customerId: 7,
+          customerId: 6,
           status: "Em Aberto",
-          price: 12.00,
+          price: 12.0,
           description: "Desodorante Old Spice",
         },
         {

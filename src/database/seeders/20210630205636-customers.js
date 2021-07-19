@@ -8,19 +8,19 @@ module.exports = {
         {
           associateId: "1",
           companyname: "mini Miniaturas",
-          cnpj: 41726262000115,
+          cnpj: 65755215000168,
           address: "Avenida Cronos, 45",
         },
         {
           associateId: "1",
           companyname: "VISÃO televisores",
-          cnpj: 55636852000161,
+          cnpj: 24230226000147,
           address: "Avenida Hera, 450",
         },
         {
           associateId: "2",
           companyname: "LUME Luminárias",
-          cnpj: 90139306000116,
+          cnpj: 95448345000119,
           address: "Avenida Atena, 400",
         },
         {

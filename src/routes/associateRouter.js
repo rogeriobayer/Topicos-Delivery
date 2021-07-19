@@ -21,11 +21,7 @@ associateRouter.put(
   auth,
   associateController.updateAssociate
 );
-associateRouter.delete(
-  "/deleteAssociate",
-  
-  associateController.deleteAssociate
-);
+associateRouter.delete("/deleteAssociate", associateController.deleteAssociate);
 
 associateRouter.get(
   "/getAdministrativeReport",
@@ -41,6 +37,6 @@ associateRouter.get(
   associateController.getFinancialReport
 );
 
-associateRouter.get("/logout",userAssociate, auth, associateController.logout);
+associateRouter.get("/logout", userAssociate, auth, associateController.logout);
 
 module.exports = associateRouter;

@@ -274,19 +274,42 @@ module.exports = {
   //** Deletar Associado */
   async deleteAssociate(req, res) {
     const AssociateId = req.body.id;
+
+    const AssociateHasRef = await Delivery.findOne({
+      where: { AssociateId },
+    }).catch((error) => {
+      res.status(500).json({ msg: "Falha na conexão." });
+    });
+    if (AssociateHasRef) {
+      await Delivery.destroy({
+        where: { associateId: AssociateId },
+      }).catch(async (error) => {
+        return res
+          .status(403)
+          .json("Erro ao deletar Entrega integrado ao associado");
+      });
+
+      await Motoboy.destroy({
+        where: { associateId: AssociateId },
+      }).catch(async (error) => {
+        return res
+          .status(403)
+          .json("Erro ao deletar Motoboy integrado ao associado");
+      });
+    }
+
+    await Customer.destroy({
+      where: { associateId: AssociateId },
+    }).catch(async (error) => {
+      return res
+        .status(403)
+        .json("Erro ao deletar Motoboy integrado ao associado");
+    });
+
     const deletedAssociate = await Associate.destroy({
       where: { id: AssociateId },
-    }).catch(async (error) => {
-      const AssociateHasRef = await Deliveries.findOne({
-        where: { AssociateId },
-      }).catch((error) => {
-        res.status(500).json({ msg: "Falha na conexão." });
-      });
-      if (AssociateHasRef) {
-        // ** Pprecisamos deletar os outros registros aqui.
-      }
-    });
-    if (deletedAssociate != 0)
+    }).catch(async (error) => {});
+    if (deletedAssociate)
       res.status(200).json({ msg: "Associado excluido com sucesso." });
     else res.status(404).json({ msg: "Associado não encontrado." });
   },
@@ -348,7 +371,7 @@ module.exports = {
       res.status(404).json({ msg: "Nao foi possível encontrar Associados." });
   },
   logout(req, res) {
-		process.env.JWT_SECRET = Math.random().toString(36).slice(-20);
-		res.sendStatus(200);
-	},
+    process.env.JWT_SECRET = Math.random().toString(36).slice(-20);
+    res.sendStatus(200);
+  },
 };
