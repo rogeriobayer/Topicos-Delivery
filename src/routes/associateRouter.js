@@ -18,7 +18,6 @@ associateRouter.post(
 );
 associateRouter.put(
   "/updateAssociate",
-  userAssociate,
   auth,
   associateController.updateAssociate
 );
