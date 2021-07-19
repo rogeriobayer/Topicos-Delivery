@@ -1,22 +1,23 @@
 const express = require("express");
 const customerRouter = express.Router();
 const customerController = require("../controllers/customerController");
-const authAssociate = require("../middlewares/authAssociate");
+const auth = require("../middlewares/auth");
+const userAssociate = require("../middlewares/userAssociate");
 
-customerRouter.post("/newCustomer",authAssociate, customerController.newCustomer);
-customerRouter.delete("/deleteCustomer/:id",authAssociate, customerController.deleteCustomer);
-customerRouter.put("/updateCustomer",authAssociate, customerController.updateCustomer);
-customerRouter.get("/listAllCustomers",authAssociate, customerController.listAllCustomers);
+customerRouter.post("/newCustomer",userAssociate,auth, customerController.newCustomer);
+customerRouter.delete("/deleteCustomer/:id",userAssociate,auth, customerController.deleteCustomer);
+customerRouter.put("/updateCustomer",userAssociate,auth, customerController.updateCustomer);
+customerRouter.get("/listAllCustomers",userAssociate,auth, customerController.listAllCustomers);
 customerRouter.post(
-  "/searchCustomerByName",authAssociate,
+  "/searchCustomerByName",userAssociate, auth,
   customerController.searchCustomerByName
 );
 customerRouter.post(
-  "/searchCustomerById",authAssociate,
+  "/searchCustomerById",userAssociate, auth,
   customerController.searchCustomerById
 );
 customerRouter.post(
-  "/searchCustomerByCNPJ",authAssociate,
+  "/searchCustomerByCNPJ",userAssociate, auth,
   customerController.searchCustomerByCNPJ
 );
 

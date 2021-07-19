@@ -8,8 +8,8 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 function generateToken(id) {
-  process.env.ASSOCIATE_SECRET = Math.random().toString(36).slice(-20);
-  const token = jwt.sign({ id }, process.env.ASSOCIATE_SECRET, {
+  process.env.JWT_SECRET = Math.random().toString(36).slice(-20);
+  const token = jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: 18000, // Token expira em 5 horas
   });
   return token;
@@ -20,7 +20,7 @@ function passwordValidation(password) {
     return "Senha deve ter no mínimo uma letra.";
   else if (!password.match(/[0-9]+/))
     return "Senha deve ter no mínimo um número.";
-  else if (!password.match(/[*!@#$%^&()_+-=[]{};':"\|,.<>?]/))
+  else if (!password.match(/[!@#$%^&*?]/))
     return "Senha deve ter no mínimo um caracter especial.";
   else return "OK";
 }
@@ -151,7 +151,7 @@ module.exports = {
           const token = generateToken(associate.id);
           return res
             .status(200)
-            .json({ msg: "Autenticado com sucesso", token });
+            .json({ msg: "Autenticado com sucesso, tipo = Associado", token });
         } else
           return res.status(404).json({ msg: "Usuário ou senha inválidos." });
       }
@@ -347,4 +347,8 @@ module.exports = {
     else
       res.status(404).json({ msg: "Nao foi possível encontrar Associados." });
   },
+  logout(req, res) {
+		process.env.JWT_SECRET = Math.random().toString(36).slice(-20);
+		res.sendStatus(200);
+	},
 };

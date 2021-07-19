@@ -5,7 +5,7 @@ function verifyJWT(req, res, next) {
   if (!token) return res.status(401).json({ msg: "Token indefinido." });
   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
     if (err)
-      return res.status(401).json({ msg: "Falha na autenticação do motoboy." });
+      return res.status(401).json({ msg: "Falha na autenticação do token." });
     req.motoboyId = decoded.id;
     next();
   });

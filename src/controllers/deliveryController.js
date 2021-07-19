@@ -91,13 +91,15 @@ module.exports = {
 
   async searchDeliveriesByStatus(req, res) {
     const status = req.body.status;
-    if (!status)
+    const id = req.body.motoboyId;
+    if (!status || !id)
       res.status(400).json({
-        msg: "Parâmetro status está vazio.",
+        msg: "Parâmetro status ou motoboyId está vazio.",
       });
     const Op = Sequelize.Op;
     const delivery = await Delivery.findAll({
       where: {
+        motoboyId:id,
         status: {
           [Op.like]: "%" + status + "%",
         },
