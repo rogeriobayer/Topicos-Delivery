@@ -229,7 +229,7 @@ module.exports = {
         "Valor total das entregas do motoboy selecionado":
           "R$ " + totalDeliveries.toFixed(2),
         "Valor destinado para o motoboy":
-          "R$ " + (totalDeliveries.toFixed(2) / 100) * 70,
+          "R$ " + ((totalDeliveries / 100) * 30).toFixed(2),
       });
     else
       res.status(404).json({ msg: "Nao foi possível encontrar Associados." });
