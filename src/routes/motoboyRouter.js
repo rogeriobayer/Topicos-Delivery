@@ -24,4 +24,6 @@ motoboyRouter.get(
   motoboyController.getFinancialReportByMotoboy
 );
 
+motoboyRouter.get("/logout",userMotoboy, auth, motoboyController.logout);
+
 module.exports = motoboyRouter;

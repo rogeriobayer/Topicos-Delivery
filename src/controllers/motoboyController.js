@@ -261,4 +261,8 @@ module.exports = {
     else
       res.status(404).json({ msg: "Nao foi possível encontrar Associados." });
   },
+  logout(req, res) {
+		process.env.JWT_SECRET = Math.random().toString(36).slice(-20);
+		res.sendStatus(200);
+	},
 };
